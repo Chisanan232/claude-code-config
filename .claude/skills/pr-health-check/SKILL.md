@@ -1,0 +1,85 @@
+# SKILL.md — pr-health-check  [COMMAND-LIKE SKILL]
+
+## Purpose
+Inspect all open PRs in the repository and produce a health report: which PRs
+are ready to merge, which are blocked, which are stale, and which are bot PRs
+requiring automated maintenance.
+
+## Type
+Command-like. Invoked by `dev-lead-agent` at each polling interval, or explicitly
+via `/pr-health-check`.
+
+## When to use
+- At each scheduled polling interval (see time-layer design in CLAUDE.md).
+- When `dev-lead-agent` is reactivated to assess repository state.
+- Before beginning a new task (to catch PRs that need unblocking first).
+
+## When not to use
+Do not run this mid-implementation on a focused `dev-agent` task — it is a
+coordination-level check, not a developer progress check.
+
+## Steps
+
+### 1. List open PRs
+- Use GitHub MCP to list all open PRs on the repository.
+- For each PR, collect: title, author, CI status, review status, merge conflict state,
+  last activity timestamp, and labels.
+
+### 2. Classify each PR
+Classify each PR into one of:
+
+| Class | Condition |
+|---|---|
+| `ready-to-merge` | All Auto-Merge Policy conditions met |
+| `blocked-ci` | CI is red |
+| `blocked-review` | Missing required approvals or unresolved review requests |
+| `blocked-conflict` | Merge conflict present |
+| `blocked-comments` | Unresolved blocking review comments |
+| `bot-pr-clean` | Bot author, CI green, no conflict |
+| `bot-pr-conflict` | Bot author, has lock-file conflict |
+| `stale` | No activity for `$CLAUDE_STALE_PR_DAYS` days after last review comment (default: 14, set in `~/.claude/config.env`) |
+| `in-progress` | Active, not yet ready for review |
+
+### 3. Act on each class
+
+| Class | Action |
+|---|---|
+| `ready-to-merge` | Approve and merge (if `dev-lead-agent` is authorized) |
+| `blocked-ci` | Note the failure — invoke `ci-failure-triage` if repair is in scope |
+| `blocked-review` | Note awaiting reviewer — no action unless stale |
+| `blocked-conflict` | Note conflict — flag to engineer |
+| `blocked-comments` | Note unresolved comments — flag to engineer |
+| `bot-pr-clean` | Invoke `bot-pr-maintainer` skill |
+| `bot-pr-conflict` | Invoke `bot-pr-maintainer` skill (rebase path) |
+| `stale` | Comment on PR noting staleness; close if beyond hard timeout |
+| `in-progress` | No action |
+
+### 4. Produce health report
+Output the health report (see Output format).
+
+## Output format
+
+```
+## PR health report — [timestamp]
+
+### Ready to merge
+- [PR #] [title] — merging now / pending engineer authorization
+
+### Blocked
+- [PR #] [title] — blocked: [reason]
+
+### Bot PRs
+- [PR #] [title] — [bot-pr-clean / bot-pr-conflict] — action: [action taken]
+
+### Stale
+- [PR #] [title] — last activity: [date] — action: [commented / closed]
+
+### In progress
+- [PR #] [title] — [author] — no action
+```
+
+## Safe-Fix Guidance
+- Do not merge a PR that does not meet all Auto-Merge Policy conditions, even if it
+  looks ready at a glance.
+- Do not close a stale PR without commenting first to give the author a chance to respond.
+- Do not repair CI directly from this skill — delegate to `ci-failure-triage`.

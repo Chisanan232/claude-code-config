@@ -1,0 +1,35 @@
+# Never commit secrets or machine-local state
+.claude.json
+**/.credentials.json
+**/*.key
+**/*.pem
+**/.env
+**/.env.*
+!.claude/config.env
+
+# Runtime / session state (do not version)
+**/sessions/
+**/projects/
+**/tasks/
+**/telemetry/
+**/audit/
+**/decisions/
+**/workflow-state/
+**/circuit-breaker/
+**/sentinels/
+**/shell-snapshots/
+**/session-notes/
+**/session-env/
+**/file-history/
+**/backups/
+**/paste-cache/
+**/security_warnings_state_*.json
+**/stats-cache.json
+**/history.jsonl
+**/*.bak
+**/*.log
+
+# Third-party plugin cache (installed via marketplace)
+**/plugins/
+
+.DS_Store
