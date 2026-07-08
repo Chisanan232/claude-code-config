@@ -117,7 +117,7 @@
                 "JIRA_USERNAME": "${JIRA_USERNAME}",
                 "JIRA_API_TOKEN": "${JIRA_API_TOKEN}"
             },
-            "_note": "[VERIFY IMAGE README] Confirm required env vars and runtime args before enabling. JIRA_URL must be the full base URL (e.g. https://yourorg.atlassian.net). JIRA_USERNAME is the account email. JIRA_API_TOKEN is generated at https://id.atlassian.com/manage-profile/security/api-tokens",
+            "_note": "IMPORTANT: JIRA_USERNAME must be your Atlassian account EMAIL (e.g. user@example.com), NOT your username. JIRA_URL must be the full base URL (e.g. https://yourorg.atlassian.net). JIRA_API_TOKEN is generated at https://id.atlassian.com/manage-profile/security/api-tokens",
             "_tier": "project-opt-in",
             "_role": "Enable when CLAUDE_ISSUE_TRACKER=jira. Set JIRA_URL, JIRA_USERNAME, and JIRA_API_TOKEN in .env. Only one issue_tracking provider should be active at a time.",
             "capabilities": [
