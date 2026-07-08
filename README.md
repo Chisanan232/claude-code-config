@@ -4,6 +4,22 @@ Versioned personal configuration for [Claude Code](https://claude.com/claude-cod
 Snapshot of `~/.claude/` — global behavioral policy, hooks, skills, and MCP server
 config — with all secrets redacted to `${ENV_VAR}` placeholders.
 
+## Prerequisites
+
+This configuration depends on several CLI tools. Install them before use:
+
+| Tool | Install | Used by |
+|---|---|---|
+| `rtk` | `cargo install rtk-token-killer` | Token-optimized CLI proxy for dev operations |
+| `codegraph` | See [CodeGraph](#codegraph) section | Codebase knowledge graph for symbol/call-path queries |
+| `codebase-memory-mcp` | `cargo install codebase-memory-mcp` | MCP server for structural code queries |
+| `uvx` | `pip install uv` (provides `uvx`) | Run Python tools without global installs |
+| `direnv` | `brew install direnv` (macOS) | Auto-load secrets from `.envrc` |
+
+**Graceful degradation**: Most features work without every tool installed.
+Missing tools trigger warnings in hooks but do not block execution. Install
+tools incrementally as you adopt each capability.
+
 ## Layout
 
 ```
