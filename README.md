@@ -63,6 +63,45 @@ Register a server:
 claude mcp add --scope user --transport http neon https://mcp.neon.tech/mcp
 ```
 
+## Configuration Scope Hierarchy
+
+Claude Code reads configuration from two locations with a defined precedence:
+
+| Scope | Location | Applies to |
+|---|---|---|
+| **Global** | `~/.claude/` | All projects on this machine |
+| **Project** | `<repo>/.claude/` | Single repository only |
+
+### Layering behavior
+
+1. Claude Code loads global config (`~/.claude/`) first
+2. Then loads project config (`<repo>/.claude/`) if present
+3. Project values **override** global values for the same key
+
+### What belongs where
+
+| File | Global scope | Project scope |
+|---|---|---|
+| `CLAUDE.md` | Durable behavioral policy, workflow conventions | Repo-specific commands, architecture constraints |
+| `settings.json` | Default permissions, model preference | Project-specific permissions, hook overrides |
+| `hooks/` | Shared workflow hooks | Project-specific automation |
+| `skills/` | General-purpose skills | Domain-specific skills |
+
+### Example: permission layering
+
+```jsonc
+// ~/.claude/settings.json (global)
+{ "permissions": { "allow": ["Bash(git *)"] } }
+
+// <repo>/.claude/settings.json (project)
+{ "permissions": { "allow": ["Bash(npm *)"] } }
+
+// Result: both "git *" and "npm *" are allowed in this repo
+```
+
+**Tip**: Keep global config minimal and stable. Use project config for
+repo-specific overrides and experimental settings.
+
 ## Security
 
 No real credentials are committed. `.claude.json` (holds live tokens / project
