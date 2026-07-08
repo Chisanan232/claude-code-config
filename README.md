@@ -47,6 +47,41 @@ Register a server:
 claude mcp add --scope user --transport http neon https://mcp.neon.tech/mcp
 ```
 
+## AI-Assisted Onboarding
+
+Copy and paste this prompt into Claude Code to automate setup:
+
+```text
+I want to set up claude-code-config. Please:
+
+1. Clone the repo if not present:
+   git clone https://github.com/Chisanan232/claude-code-config.git ~/claude-code-config
+
+2. Run the setup check script:
+   bash ~/claude-code-config/scripts/check.sh
+
+3. Review the output and help me:
+   - Install any missing prerequisites
+   - Copy config files to ~/.claude/
+   - Set up direnv for secrets management
+   - Initialize CodeGraph if I want it
+
+4. Verify the setup is complete by checking:
+   - ~/.claude/CLAUDE.md exists
+   - ~/.claude/settings.json exists
+   - Required CLI tools are in PATH
+
+Guide me through each step, explaining what each config file does.
+```
+
+### What the onboarding does
+
+- Checks for required CLI tools (rtk, codegraph, uvx, direnv)
+- Validates existing `~/.claude/` configuration
+- Guides you through copying config files
+- Sets up secrets management with direnv
+- Optionally initializes CodeGraph for your projects
+
 ## Security
 
 No real credentials are committed. `.claude.json` (holds live tokens / project
