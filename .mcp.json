@@ -32,6 +32,7 @@
             ],
             "_tier": "project-opt-in",
             "_role": "First-class quality gate: run before every PR merge decision via pr-health-check and pr-readiness skills. Enable per project by providing SONAR_TOKEN and SONAR_HOST_URL.",
+            "_note": "[NOT AVAILABLE] The mcp/sonarqube Docker image does not exist publicly. You need to build a custom MCP server for SonarQube integration or find a community implementation.",
             "disabled": true
         },
         "codecov": {
@@ -52,6 +53,7 @@
             ],
             "_tier": "project-opt-in",
             "_role": "Optional: enable when coverage trend tracking is required for PR merge decisions. Used by qa-agent acceptance-validation and pr-readiness skills.",
+            "_note": "[NOT AVAILABLE] The mcp/codecov Docker image does not exist publicly. You need to build a custom MCP server for Codecov integration or find a community implementation.",
             "disabled": true
         },
         "slack": {
@@ -99,25 +101,16 @@
             "disabled": true
         },
         "jira": {
-            "command": "docker",
+            "command": "uvx",
             "args": [
-                "run",
-                "--rm",
-                "-i",
-                "-e",
-                "JIRA_URL",
-                "-e",
-                "JIRA_USERNAME",
-                "-e",
-                "JIRA_API_TOKEN",
-                "ghcr.io/chisanan232/jira-mcp-server:latest"
+                "mcp-atlassian"
             ],
             "env": {
                 "JIRA_URL": "${JIRA_URL}",
                 "JIRA_USERNAME": "${JIRA_USERNAME}",
                 "JIRA_API_TOKEN": "${JIRA_API_TOKEN}"
             },
-            "_note": "[VERIFY IMAGE README] Confirm required env vars and runtime args before enabling. JIRA_URL must be the full base URL (e.g. https://yourorg.atlassian.net). JIRA_USERNAME is the account email. JIRA_API_TOKEN is generated at https://id.atlassian.com/manage-profile/security/api-tokens",
+            "_note": "IMPORTANT: JIRA_USERNAME must be your Atlassian account EMAIL (e.g. user@example.com), NOT your username. JIRA_URL must be the full base URL (e.g. https://yourorg.atlassian.net). JIRA_API_TOKEN is generated at https://id.atlassian.com/manage-profile/security/api-tokens. See https://github.com/sooperset/mcp-atlassian for full documentation.",
             "_tier": "project-opt-in",
             "_role": "Enable when CLAUDE_ISSUE_TRACKER=jira. Set JIRA_URL, JIRA_USERNAME, and JIRA_API_TOKEN in .env. Only one issue_tracking provider should be active at a time.",
             "capabilities": [
@@ -128,12 +121,11 @@
         "playwright": {
             "command": "npx",
             "args": [
-                "@microsoft/playwright-mcp",
-                "--browser",
-                "chrome"
+                "-y",
+                "@playwright/mcp@latest"
             ],
             "_tier": "project-opt-in",
-            "_role": "Used by qa-agent for UI acceptance testing \u2014 navigate pages, interact with elements via accessibility tree, capture snapshots. Enable for projects with a web UI. Browser: chrome by default; override with --browser firefox|webkit|msedge.",
+            "_role": "Used by qa-agent for UI acceptance testing - navigate pages, interact with elements via accessibility tree, capture snapshots. Enable for projects with a web UI.",
             "capabilities": [
                 "browser_automation"
             ],
@@ -159,6 +151,7 @@
                 "observability"
             ],
             "_tier": "project-opt-in",
+            "_note": "[NOT AVAILABLE] The mcp/datadog Docker image does not exist publicly. You need to build a custom MCP server for Datadog integration or find a community implementation.",
             "disabled": true
         },
         "Framelink MCP for Figma": {
@@ -171,7 +164,8 @@
             ]
         },
         "codebase-memory-mcp": {
-            "command": "/Users/bryant/.nvm/versions/node/v23.11.0/lib/node_modules/codebase-memory-mcp/bin/codebase-memory-mcp"
+            "command": "npx",
+            "args": ["-y", "codebase-memory-mcp"]
         }
     }
 }
