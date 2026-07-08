@@ -23,12 +23,12 @@ tools incrementally as you adopt each capability.
 ## Layout
 
 ```
+.mcp.json                      # MCP server templates (env placeholders) - must be at project root
 .claude/
 ├── CLAUDE.md                  # Global behavioral policy (all projects)
 ├── RTK.md                     # RTK (token-killer proxy) command reference
 ├── settings.json              # Permissions, model, hook wiring
 ├── config.env                 # Hook env overrides (gate toggles)
-├── .mcp.json                  # MCP server templates (env placeholders)
 ├── mcp-servers.runtime.json   # Runtime MCP servers, secrets redacted
 ├── hooks/                     # Workflow / gate shell hooks
 └── skills/                    # Custom skills (SKILL.md each)
