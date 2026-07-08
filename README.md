@@ -47,6 +47,59 @@ Register a server:
 claude mcp add --scope user --transport http neon https://mcp.neon.tech/mcp
 ```
 
+## Secrets Management
+
+Use [direnv](https://direnv.net/) to auto-load secrets when entering a project directory.
+
+### Setup
+
+1. Install direnv:
+   ```bash
+   brew install direnv  # macOS
+   ```
+
+2. Add to your shell (e.g., `~/.zshrc`):
+   ```bash
+   eval "$(direnv hook zsh)"
+   ```
+
+3. Create `~/.claude/secrets.env` (never committed):
+   ```bash
+   # MCP server tokens
+   export CIRCLECI_TOKEN="your-token-here"
+   export ANTHROPIC_API_KEY="sk-ant-..."
+
+   # Other service credentials
+   export GITHUB_TOKEN="ghp_..."
+   ```
+
+4. Create `~/.claude/.envrc`:
+   ```bash
+   source_env secrets.env
+   ```
+
+5. Allow direnv:
+   ```bash
+   cd ~/.claude && direnv allow
+   ```
+
+### Security best practices
+
+- **Never commit** `secrets.env` or any file containing credentials
+- Add `secrets.env` and `.envrc` to `.gitignore`
+- Use `${ENV_VAR}` placeholders in committed config files
+- Rotate tokens immediately if accidentally committed
+- Use short-lived tokens where possible (OAuth preferred over API keys)
+
+### Per-project secrets
+
+For project-specific secrets, create `<repo>/.envrc`:
+
+```bash
+source_up  # Inherit from parent .envrc
+export PROJECT_SPECIFIC_KEY="..."
+```
+
 ## Security
 
 No real credentials are committed. `.claude.json` (holds live tokens / project
