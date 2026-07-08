@@ -63,6 +63,42 @@ Register a server:
 claude mcp add --scope user --transport http neon https://mcp.neon.tech/mcp
 ```
 
+## CodeGraph
+
+[CodeGraph](https://github.com/colbymchenry/codegraph) builds a SQLite knowledge
+graph of your codebase's symbols, edges, and files. One `codegraph_explore` call
+returns verbatim, line-numbered source of relevant symbols plus call paths between
+them — replacing a grep + Read loop with a single round-trip.
+
+### Installation
+
+```bash
+# Clone and build
+git clone https://github.com/colbymchenry/codegraph.git
+cd codegraph
+cargo build --release
+
+# Add to PATH (add to ~/.zshrc for persistence)
+export PATH="$PATH:$(pwd)/target/release"
+```
+
+### Usage
+
+```bash
+# Initialize index in a project (creates .codegraph/)
+cd /path/to/your/project
+codegraph init
+
+# Query symbols and call paths
+codegraph explore "function_name"
+```
+
+### MCP integration
+
+When CodeGraph is installed and a project has a `.codegraph/` directory,
+Claude Code can use the `codegraph_explore` MCP tool for structural code queries.
+The MCP server is configured in `mcp-servers.runtime.json`.
+
 ## Configuration Scope Hierarchy
 
 Claude Code reads configuration from two locations with a defined precedence:
@@ -101,6 +137,94 @@ Claude Code reads configuration from two locations with a defined precedence:
 
 **Tip**: Keep global config minimal and stable. Use project config for
 repo-specific overrides and experimental settings.
+
+## Secrets Management
+
+Use [direnv](https://direnv.net/) to auto-load secrets when entering a project directory.
+
+### Setup
+
+1. Install direnv:
+   ```bash
+   brew install direnv  # macOS
+   ```
+
+2. Add to your shell (e.g., `~/.zshrc`):
+   ```bash
+   eval "$(direnv hook zsh)"
+   ```
+
+3. Create `~/.claude/secrets.env` (never committed):
+   ```bash
+   # MCP server tokens
+   export CIRCLECI_TOKEN="your-token-here"
+   export ANTHROPIC_API_KEY="sk-ant-..."
+
+   # Other service credentials
+   export GITHUB_TOKEN="ghp_..."
+   ```
+
+4. Create `~/.claude/.envrc`:
+   ```bash
+   source_env secrets.env
+   ```
+
+5. Allow direnv:
+   ```bash
+   cd ~/.claude && direnv allow
+   ```
+
+### Security best practices
+
+- **Never commit** `secrets.env` or any file containing credentials
+- Add `secrets.env` and `.envrc` to `.gitignore`
+- Use `${ENV_VAR}` placeholders in committed config files
+- Rotate tokens immediately if accidentally committed
+- Use short-lived tokens where possible (OAuth preferred over API keys)
+
+### Per-project secrets
+
+For project-specific secrets, create `<repo>/.envrc`:
+
+```bash
+source_up  # Inherit from parent .envrc
+export PROJECT_SPECIFIC_KEY="..."
+```
+
+## AI-Assisted Onboarding
+
+Copy and paste this prompt into Claude Code to automate setup:
+
+```text
+I want to set up claude-code-config. Please:
+
+1. Clone the repo if not present:
+   git clone https://github.com/Chisanan232/claude-code-config.git ~/claude-code-config
+
+2. Run the setup check script:
+   bash ~/claude-code-config/scripts/check.sh
+
+3. Review the output and help me:
+   - Install any missing prerequisites
+   - Copy config files to ~/.claude/
+   - Set up direnv for secrets management
+   - Initialize CodeGraph if I want it
+
+4. Verify the setup is complete by checking:
+   - ~/.claude/CLAUDE.md exists
+   - ~/.claude/settings.json exists
+   - Required CLI tools are in PATH
+
+Guide me through each step, explaining what each config file does.
+```
+
+### What the onboarding does
+
+- Checks for required CLI tools (rtk, codegraph, uvx, direnv)
+- Validates existing `~/.claude/` configuration
+- Guides you through copying config files
+- Sets up secrets management with direnv
+- Optionally initializes CodeGraph for your projects
 
 ## Security
 
