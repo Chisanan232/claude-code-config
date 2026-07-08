@@ -93,6 +93,10 @@ codegraph init
 codegraph explore "function_name"
 ```
 
+> **Warning**: Do NOT run `codegraph install` — it modifies your global Claude Code
+> config in ways that may conflict with this configuration. Only use `codegraph init`
+> to create per-project indexes.
+
 ### MCP integration
 
 When CodeGraph is installed and a project has a `.codegraph/` directory,
@@ -214,6 +218,10 @@ I want to set up claude-code-config. Please:
    - ~/.claude/CLAUDE.md exists
    - ~/.claude/settings.json exists
    - Required CLI tools are in PATH
+
+My preferences:
+- Scope: [global / project at <path>]
+- MCP servers I need: [github, jira, fetch, playwright, codegraph, etc.]
 
 Guide me through each step, explaining what each config file does.
 ```
